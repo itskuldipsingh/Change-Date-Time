@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Date Time Change</title>
+</head>
+<body>
+  <h1>Date Time Change</h1>
+  <p>Enter Date and Time (DD-MM-YYYY hh:mm:ss):</p>
+  <input type="text" id="datetime-input" value="">
+  <br><br>
+  <p>Select what you want to change:</p>
+  <select id="change-option">
+    <option value="second">Second</option>
+    <option value="minute">Minute</option>
+    <option value="hour">Hour</option>
+    <option value="day">Day</option>
+    <option value="month">Month</option>
+    <option value="year">Year</option>
+  </select>
+  <br><br>
+  <p>Enter the change value (positive or negative):</p>
+  <input type="number" id="change-value" value="0">
+  <br><br>
+  <button onclick="changeDateTime()">Change Date Time</button>
+  <br><br>
+  <p id="result"></p>
+
+  <script>
+    function changeDateTime() {
+      // Get input values
+      const dateTimeInput = document.getElementById("datetime-input").value;
+      const changeOption = document.getElementById("change-option").value;
+      const changeValue = parseInt(document.getElementById("change-value").value);
+
+      // Check if date time input is valid
+      if (!isValidDateTime(dateTimeInput)) {
+        document.getElementById("result").textContent = "Invalid Date Time format!";
+        return;
+      }
+
+      // Convert input to Date object
+      const date = new Date(dateTimeInput);
+
+      // Modify date based on change option and value
+      switch (changeOption) {
+        case "second":
+          date.setSeconds(date.getSeconds() + changeValue);
+          break;
+        case "minute":
+          date.setMinutes(date.getMinutes() + changeValue);
+          break;
+        case "hour":
+          date.setHours(date.getHours() + changeValue);
+          break;
+        case "day":
+          date.setDate(date.getDate() + changeValue);
+          break;
+        case "month":
+          date.setMonth(date.getMonth() + changeValue);
+          break;
+        case "year":
+          date.setFullYear(date.getFullYear() + changeValue);
+          break;
+      }
+
+      // Format and display the changed date time
+      const formattedDateTime = date.toLocaleString();
+      document.getElementById("result").textContent = "Changed Date Time: " + formattedDateTime;
+    }
+
+    function isValidDateTime(dateTimeString) {
+      // Regular expression to validate DD-MM-YYYY hh:mm:ss format
+      const regex = /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}$/;
+      return regex.test(dateTimeString);
+    }
+  </script>
+</body>
+</html>
