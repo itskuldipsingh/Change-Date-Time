@@ -7,18 +7,24 @@
 <body>
   <h1>Date Time Change</h1>
   <p>Select Date and Time:</p>
-  <input type="text" id="year-input" placeholder="Year">
-  <select id="year-select" size="10" style="display:none;"></select>
+  <p> Year 	Month 	Day	Hour	Minute	Second</p>
+  <input type="text" id="year-input" placeholder="Year" list="year-datalist">
+  <datalist id="year-datalist"></datalist>
   -
-  <select id="month-select"></select>
+  <input type="text" id="month-input" placeholder="Month" list="month-datalist">
+  <datalist id="month-datalist"></datalist>
   -
-  <select id="day-select"></select>
-  <br>
-  <select id="hour-select"></select>
+  <input type="text" id="day-input" placeholder="Day" list="day-datalist">
+  <datalist id="day-datalist"></datalist>
+  
+  <input type="text" id="hour-input" placeholder="Hour" list="hour-datalist">
+  <datalist id="hour-datalist"></datalist>
   :
-  <select id="minute-select"></select>
+  <input type="text" id="minute-input" placeholder="Minute" list="minute-datalist">
+  <datalist id="minute-datalist"></datalist>
   :
-  <select id="second-select"></select>
+  <input type="text" id="second-input" placeholder="Second" list="second-datalist">
+  <datalist id="second-datalist"></datalist>
   <br><br>
   <p>Select what you want to change:</p>
   <select id="change-option">
@@ -43,109 +49,86 @@
       years.push(year.toString());
     }
 
-    function populateDropdowns() {
-      const monthSelect = document.getElementById("month-select");
-      const daySelect = document.getElementById("day-select");
-      const hourSelect = document.getElementById("hour-select");
-      const minuteSelect = document.getElementById("minute-select");
-      const secondSelect = document.getElementById("second-select");
+    function populateDatalists() {
+      const yearDatalist = document.getElementById("year-datalist");
+      const monthDatalist = document.getElementById("month-datalist");
+      const dayDatalist = document.getElementById("day-datalist");
+      const hourDatalist = document.getElementById("hour-datalist");
+      const minuteDatalist = document.getElementById("minute-datalist");
+      const secondDatalist = document.getElementById("second-datalist");
 
-      // Populate month dropdown
+      // Populate year datalist
+      const yearFragment = document.createDocumentFragment();
+      years.forEach(year => {
+        const option = document.createElement("option");
+        option.value = year;
+        yearFragment.appendChild(option);
+      });
+      yearDatalist.appendChild(yearFragment);
+
+      // Populate month datalist
       const monthFragment = document.createDocumentFragment();
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      for (let month = 0; month < 12; month++) {
+      monthNames.forEach((month, index) => {
         const option = document.createElement("option");
-        option.value = month;
-        option.text = monthNames[month];
+        option.value = (index + 1).toString().padStart(2, '0') + " - " + month;
         monthFragment.appendChild(option);
+      });
+      monthDatalist.appendChild(monthFragment);
+
+      // Populate day datalist
+      const dayFragment = document.createDocumentFragment();
+      for (let day = 1; day <= 31; day++) {
+        const option = document.createElement("option");
+        option.value = day.toString().padStart(2, '0');
+        dayFragment.appendChild(option);
       }
-      monthSelect.appendChild(monthFragment);
+      dayDatalist.appendChild(dayFragment);
 
-      // Populate day dropdown (needs to be adjusted based on selected month and year)
-      populateDaySelect();
-
-      // Populate hour dropdown (0-23)
+      // Populate hour datalist
       const hourFragment = document.createDocumentFragment();
       for (let hour = 0; hour < 24; hour++) {
         const option = document.createElement("option");
-        option.value = hour;
-        option.text = hour.toString().padStart(2, '0'); // Add leading zero
+        option.value = hour.toString().padStart(2, '0');
         hourFragment.appendChild(option);
       }
-      hourSelect.appendChild(hourFragment);
+      hourDatalist.appendChild(hourFragment);
 
-      // Populate minute and second dropdowns (0-59)
+      // Populate minute and second datalists
       const minuteFragment = document.createDocumentFragment();
       const secondFragment = document.createDocumentFragment();
       for (let i = 0; i < 60; i++) {
         const option = document.createElement("option");
-        option.value = i;
-        option.text = i.toString().padStart(2, '0'); // Add leading zero
+        option.value = i.toString().padStart(2, '0');
         minuteFragment.appendChild(option);
         secondFragment.appendChild(option.cloneNode(true));
       }
-      minuteSelect.appendChild(minuteFragment);
-      secondSelect.appendChild(secondFragment);
+      minuteDatalist.appendChild(minuteFragment);
+      secondDatalist.appendChild(secondFragment);
     }
 
-    function populateDaySelect() {
-      const daySelect = document.getElementById("day-select");
-      daySelect.innerHTML = ""; // Clear existing options
+    function getDateTimeFromInputs() {
+      const year = parseInt(document.getElementById("year-input").value) || 0;
+      const month = (parseInt(document.getElementById("month-input").value) - 1) || 0;
+      const day = parseInt(document.getElementById("day-input").value) || 1;
+      const hour = parseInt(document.getElementById("hour-input").value) || 0;
+      const minute = parseInt(document.getElementById("minute-input").value) || 0;
+      const second = parseInt(document.getElementById("second-input").value) || 0;
 
-      const year = parseInt(document.getElementById("year-input").value);
-      const month = parseInt(document.getElementById("month-select").value);
-      const daysInMonth = new Date(year, month + 1, 0).getDate(); // Get days in selected month
-
-      // Populate day dropdown with valid days for the selected month
-      const dayFragment = document.createDocumentFragment();
-      for (let day = 1; day <= daysInMonth; day++) {
-        const option = document.createElement("option");
-        option.value = day;
-        option.text = day.toString().padStart(2, '0'); // Add leading zero
-        dayFragment.appendChild(option);
-      }
-      daySelect.appendChild(dayFragment);
+      return new Date(year, month, day, hour, minute, second);
     }
 
-    document.getElementById("year-input").addEventListener("input", function() {
-      const input = this.value;
-      const yearSelect = document.getElementById("year-select");
-      yearSelect.innerHTML = ""; // Clear existing options
-
-      if (input) {
-        const filteredYears = years.filter(year => year.startsWith(input));
-        const yearFragment = document.createDocumentFragment();
-        filteredYears.forEach(year => {
-          const option = document.createElement("option");
-          option.value = year;
-          option.text = year;
-          yearFragment.appendChild(option);
-        });
-        yearSelect.appendChild(yearFragment);
-        yearSelect.style.display = "block";
-      } else {
-        yearSelect.style.display = "none";
-      }
-    });
-
-    document.getElementById("year-select").addEventListener("change", function() {
-      const yearInput = document.getElementById("year-input");
-      yearInput.value = this.value;
-      this.style.display = "none";
-      populateDaySelect();
-    });
-
-    document.getElementById("month-select").addEventListener("change", populateDaySelect);
+    function updateInputsFromDateTime(date) {
+      document.getElementById("year-input").value = date.getFullYear();
+      document.getElementById("month-input").value = (date.getMonth() + 1).toString().padStart(2, '0');
+      document.getElementById("day-input").value = date.getDate().toString().padStart(2, '0');
+      document.getElementById("hour-input").value = date.getHours().toString().padStart(2, '0');
+      document.getElementById("minute-input").value = date.getMinutes().toString().padStart(2, '0');
+      document.getElementById("second-input").value = date.getSeconds().toString().padStart(2, '0');
+    }
 
     function changeDateTime() {
-      const year = parseInt(document.getElementById("year-input").value);
-      const month = parseInt(document.getElementById("month-select").value);
-      const day = parseInt(document.getElementById("day-select").value);
-      const hour = parseInt(document.getElementById("hour-select").value);
-      const minute = parseInt(document.getElementById("minute-select").value);
-      const second = parseInt(document.getElementById("second-select").value);
-
-      let date = new Date(year, month, day, hour, minute, second);
+      let date = getDateTimeFromInputs();
 
       const changeOption = document.getElementById("change-option").value;
       const changeValue = parseInt(document.getElementById("change-value").value);
@@ -173,17 +156,12 @@
 
       document.getElementById("result").innerText = `New Date and Time: ${date.toString()}`;
 
-      // Update dropdowns to reflect the new date and time
-      document.getElementById("year-input").value = date.getFullYear();
-      document.getElementById("month-select").value = date.getMonth();
-      populateDaySelect();
-      document.getElementById("day-select").value = date.getDate();
-      document.getElementById("hour-select").value = date.getHours();
-      document.getElementById("minute-select").value = date.getMinutes();
-      document.getElementById("second-select").value = date.getSeconds();
+      // Update inputs to reflect the new date and time
+      updateInputsFromDateTime(date);
     }
 
-    window.onload = populateDropdowns;
+    window.onload = populateDatalists;
   </script>
 </body>
 </html>
+
